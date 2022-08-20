@@ -1,9 +1,9 @@
 var ref = require('./references.js');
-
+// console.log(ref);
 
 // ref.hello();
 
-// ref.types_example();
+//ref.types_example();
 
 // ref.let_var_example();
 

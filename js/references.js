@@ -2,7 +2,7 @@ const fs = require('fs');
 
 var references = {
     hello: function() {
-        console.log('Hello world');
+        console.log('Nicolas');
     },
 
     types_example: function(){
@@ -77,7 +77,11 @@ var references = {
 
     scope_example: function() {
         var x = 2;
-        var pow = (a) => {a = a *a; console.log(a); return a;};
+        var pow = (a) => {
+            a = a *a; 
+            console.log(a); 
+            return a;
+        };
 
         console.log('without return');
         pow(x);
@@ -89,8 +93,10 @@ var references = {
 
         console.log('setting x');
         var set_x = () => {x = 10;};
-        set_x(); 
+        //var set_y = () => {var y = 10;};
+        set_x();
         console.log(x);
+        //console.log(y);
     },
 
     class_example:
@@ -105,8 +111,14 @@ var references = {
     },
 
     test_json: function () {
-        var _json = { a:1, b: 'Jonathas', c: {d:2}, e: (k) => {return k + 10} };
+        var _json = { 
+            a:1, 
+            b: 'Jonathas', 
+            c: {d:2}, 
+            e: (k) => {return k + 10} 
+        };
         console.log(_json);
+        console.log(_json['a']);
         console.log(_json.e(20));
     },
 

@@ -1,0 +1,35 @@
+<html>
+<header>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</header>
+
+<input id="name" type="text">
+
+<button id="button">send</button>
+<div class="output"></div>
+<script>
+
+    // Contador
+    var x = 0;
+    setInterval(() => {
+        x = x + 1;
+        $('.output').text(JSON.stringify(x));
+    },1000)
+
+    $("#button").click(function () {
+        // $('.output').text(JSON.stringify($("#name").val()));
+        $.get("http://localhost:3000/", function (data, status) {
+            //alert("Data: " + data + "\nStatus: " + status);
+            alert(data)
+            console.log(data)
+        });
+
+        $.post("http://localhost:3000/sensor", {"data":$("#name").val()},function (data) {
+            //alert("Data: " + data + "\nStatus: " + status);
+            alert(data)
+            console.log(data)
+        });
+    });
+</script>
+
+</html>
