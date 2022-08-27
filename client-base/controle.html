@@ -5,7 +5,9 @@
 
 <input id="name" type="text">
 
-<button id="button">send</button>
+<button id="button">send</button> <br>
+<button id="led-on">led on</button> <br>
+<button id="led-off">led off</button>
 <div class="output"></div>
 <script>
 
@@ -25,6 +27,23 @@
         });
 
         $.post("http://localhost:3000/sensor", {"data":$("#name").val()},function (data) {
+            //alert("Data: " + data + "\nStatus: " + status);
+            alert(data)
+            console.log(data)
+        });
+    });
+
+
+    $("#led-on").click(function () {
+        $.post("http://localhost:3000/setLed", { "led_state": 1 } ,function (data) {
+            //alert("Data: " + data + "\nStatus: " + status);
+            alert(data)
+            console.log(data)
+        });
+    });
+
+    $("#led-off").click(function () {
+        $.post("http://localhost:3000/setLed", { "led_state": 0 } ,function (data) {
             //alert("Data: " + data + "\nStatus: " + status);
             alert(data)
             console.log(data)
