@@ -9,6 +9,7 @@
 <button id="led-on">led on</button> <br>
 <button id="led-off">led off</button>
 <div class="output"></div>
+<div class="counter">LED current state: <spam class="ledFeedback"></spam></div>
 <script>
 
     // Contador
@@ -16,17 +17,20 @@
     setInterval(() => {
         x = x + 1;
         $('.output').text(JSON.stringify(x));
-    },1000)
+        $('.ledFeedback').load("getLedFeedback");
+    },5000)
+
+    $('.ledFeedback').load("getLedFeedback");
 
     $("#button").click(function () {
         // $('.output').text(JSON.stringify($("#name").val()));
-        $.get("http://localhost:3000/", function (data, status) {
+        $.get("/", function (data, status) {
             //alert("Data: " + data + "\nStatus: " + status);
             alert(data)
             console.log(data)
         });
 
-        $.post("http://localhost:3000/sensor", {"data":$("#name").val()},function (data) {
+        $.post("/sensor", {"data":$("#name").val()},function (data) {
             //alert("Data: " + data + "\nStatus: " + status);
             alert(data)
             console.log(data)
@@ -35,7 +39,7 @@
 
 
     $("#led-on").click(function () {
-        $.post("http://localhost:3000/setLed", { "led_state": 1 } ,function (data) {
+        $.post("/setLed", { "led_state": "on" } ,function (data) {
             //alert("Data: " + data + "\nStatus: " + status);
             alert(data)
             console.log(data)
@@ -43,7 +47,7 @@
     });
 
     $("#led-off").click(function () {
-        $.post("http://localhost:3000/setLed", { "led_state": 0 } ,function (data) {
+        $.post("/setLed", { "led_state": "off" } ,function (data) {
             //alert("Data: " + data + "\nStatus: " + status);
             alert(data)
             console.log(data)

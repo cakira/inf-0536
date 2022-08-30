@@ -10,7 +10,9 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-var ledState = 0;
+var ledState = 'unknown';
+var ledFeedback = 'unknown';
+var counter = 0;
 
 // npm install cors
 // https://celke.com.br/artigo/como-permitir-acesso-a-api-com-cors-parte-7
@@ -33,7 +35,7 @@ app.post("/sensor", function(req, res){
 app.post("/setLed", function(req, res){
   console.log("CLIENT: google assistant", req.body)
   ledState = req.body["led_state"];
-  console.log("CLIENT: POST em /sensor")
+  console.log("CLIENT: POST em /setLed")
 })
 
 app.get("/getLed", function(req, res){
@@ -41,17 +43,35 @@ app.get("/getLed", function(req, res){
   console.log("CLIENT: GET em /getLed")
 })
 
-//setInterval(() => {console.log(ledState)},2000);
+app.post("/setLedFeedback", function(req, res){
+  console.log("CLIENT: google assistant", req.body)
+  ledFeedback = req.body["led_state"];
+  console.log("CLIENT: POST em /setLedFeedback")
+})
 
-app.get('/sensor', (req, res) => {
-    console.log("CLIENT: GET em /sensor")
-    res.send('SERVER: GET em sensor')
+app.get("/getLedFeedback", function(req, res){
+  res.send(ledFeedback.toString())
+  console.log("CLIENT: GET em /getLedFeedback")
+})
+
+app.get("/getCounter", function(req, res){
+  res.send(counter.toString())
+  console.log("CLIENT: GET em /getCounter")
+  counter = counter + 1
 })
 
 app.get('/', (req, res) => {
   console.log("CLIENT: GET em /")
-  res.send('SERVER: hello world')
-  res.status(200)
+  fs = require('fs')
+  fs.readFile('../client-base/controle.html', 'utf8', function (err,data) {
+    if (err) {
+      res.send('404: Page not found')
+      res.status(404)
+      console.log(err);
+    }
+    res.send(data);
+    res.status(200)
+  });
 })
 
 
