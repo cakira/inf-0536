@@ -50,6 +50,7 @@ void loop() {
     WiFiClient client;
 
     HTTPClient http;
+    HTTPClient httpFeedback;
 
     Serial.print("[HTTP] begin...\n");
     if (http.begin(client, "http://breezy-hounds-sneeze-189-38-187-120.loca.lt/getLed")) {  // HTTP
@@ -70,8 +71,14 @@ void loop() {
           Serial.println(payload);
           if (payload == "on") {
             digitalWrite(LED_BUILTIN, HIGH);
+            httpFeedback.begin(client, "http://breezy-hounds-sneeze-189-38-187-120.loca.lt/setLedFeedback");
+            httpFeedback.addHeader("Content-Type", "application/json");
+            httpFeedback.POST(String("{ \"led_state\": \"on\" }"));
           } else if (payload == "off") {
             digitalWrite(LED_BUILTIN, LOW);
+            httpFeedback.begin(client, "http://breezy-hounds-sneeze-189-38-187-120.loca.lt/setLedFeedback");
+            httpFeedback.addHeader("Content-Type", "application/json");
+            httpFeedback.POST(String("{ \"led_state\": \"off\" }"));
           }
         }
       } else {
