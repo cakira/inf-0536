@@ -36,6 +36,7 @@ void analogWriteSetup(int pin) {
 #endif
 
 ESPWifiMulti wifi_multi;
+static int sleep_seconds = 1;
 
 void setup() {
 
@@ -66,7 +67,7 @@ void loop() {
 
     HTTPClient http;
 
-    if (http.begin(client, "http://breezy-hounds-sneeze-189-38-187-120.loca.lt/getLed")) {  // HTTP
+    if (http.begin(client, "http://breezy-hounds-sneeze-189-38-187-120.loca.lt/getSensorState")) {  // HTTP
 
 
       // start connection and send HTTP header
@@ -80,26 +81,29 @@ void loop() {
         // file found at server
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
           String payload = http.getString();
+          int divider_position = payload.indexOf(',');
+          String led_value = payload.substring(0, divider_position);
+          sleep_seconds = payload.substring(divider_position + 1).toInt();
           String possible_quote;
-          Serial.println(payload);
-          if (payload == "on") {
+          Serial.println("Payload: " + payload + " - value: " + led_value + ", sleep: " + sleep_seconds);
+          if (led_value == "on") {
             pinMode(LED_BUILTIN, OUTPUT);
             digitalWrite(LED_BUILTIN, HIGH);
             possible_quote = "\"";
-          } else if (payload == "off") {
+          } else if (led_value == "off") {
             pinMode(LED_BUILTIN, OUTPUT);
             digitalWrite(LED_BUILTIN, LOW);
             possible_quote = "\"";
           } else {
-            int power = payload.toInt();
+            int power = led_value.toInt();
             analogWrite(LED_BUILTIN, (255 * power) / 100);
-            payload = String(power);
+            led_value = String(power);
             possible_quote = "";
           }
           HTTPClient httpFeedback;
           httpFeedback.begin(client, "http://breezy-hounds-sneeze-189-38-187-120.loca.lt/setLedFeedback");
           httpFeedback.addHeader("Content-Type", "application/json");
-          String led_feedback = String("{ \"led_state\": " + possible_quote + payload + possible_quote + " }");
+          String led_feedback = String("{ \"led_state\": " + possible_quote + led_value + possible_quote + " }");
           httpFeedback.POST(led_feedback);
         }
       } else {
@@ -112,5 +116,5 @@ void loop() {
     }
   }
 
-  delay(1000);
+  delay(sleep_seconds * 1000);
 }

@@ -10,9 +10,10 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-var ledState = 'unknown';
-var ledFeedback = 'unknown';
+var ledState = 'off';
+var ledFeedback = 'off';
 var counter = 0;
+var sleep_seconds = 1;
 
 // npm install cors
 // https://celke.com.br/artigo/como-permitir-acesso-a-api-com-cors-parte-7
@@ -44,6 +45,13 @@ app.get("/getLed", function(req, res){
   console.log("CLIENT: GET em /getLed")
 })
 
+app.get("/getSensorState", function(req, res){
+  state = ledState.toString() + "," + sleep_seconds.toString();
+  res.send(state)
+  res.status(200)
+  console.log("CLIENT: GET em /getLed")
+})
+
 app.post("/setLedFeedback", function(req, res){
   j = JSON.parse(JSON.stringify(req.body))
   console.log("CLIENT: POST em /setLedFeedback: ", j)
@@ -57,6 +65,12 @@ app.get("/getLedFeedback", function(req, res){
   console.log("CLIENT: GET em /getLedFeedback")
 })
 
+app.post("/setSleep", function(req, res){
+  j = JSON.parse(JSON.stringify(req.body))
+  console.log("CLIENT: POST em /setSleep: ", j)
+  sleep_seconds = j["sleep_time"];
+  res.sendStatus(200)
+})
 
 app.get('/', (req, res) => {
   console.log("CLIENT: GET em /")

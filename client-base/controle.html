@@ -11,6 +11,12 @@
 <button id="led-on">led on</button>
 <div class="output"></div>
 <div class="counter">LED current state: <spam class="ledFeedback"></spam></div>
+<hr>
+<div>
+    Sleep: 
+    <input type="range" min="1" max="60" value="1" class="slider" id="sleep-seconds" oninput="this.nextElementSibling.value = this.value">
+    <spam class="sleepInstantFeedback">1 second</spam>
+</div>
 <script>
 
     // Contador
@@ -21,6 +27,7 @@
         $('.ledFeedback').load("getLedFeedback");
     },1000)
     var slider = document.getElementById("led-analog");
+    var sleep_slider = document.getElementById("sleep-seconds");
 
     $('.ledFeedback').load("getLedFeedback");
 
@@ -60,6 +67,17 @@
 
     slider.oninput = function() {
         $.post("/setLed", { "led_state": slider.value } ,function (data) {
+        });
+    }
+    
+    sleep_slider.oninput = function() {
+        $.post("/setSleep", { "sleep_time": sleep_slider.value } ,function (data) {
+            if (sleep_slider.value < 2) {
+                text = sleep_slider.value + " second"
+            } else {
+                text = sleep_slider.value + " seconds"
+            }
+            $('.sleepInstantFeedback').text(text);
         });
     }
 </script>
