@@ -35,6 +35,10 @@ void analogWriteSetup(int pin) {
 }
 #endif
 
+static const String server_name = "http://inf-0536-aabc.loca.lt";
+static const char wifi_name[] = "Akine";
+static const char wifi_password[] = "81133018";
+
 ESPWifiMulti wifi_multi;
 static int sleep_seconds = 1;
 
@@ -54,7 +58,7 @@ void setup() {
   }
 
   WiFi.mode(WIFI_STA);
-  wifi_multi.addAP("Akine", "81133018");
+  wifi_multi.addAP(wifi_name, wifi_password);
   pinMode(LED_BUILTIN, OUTPUT);
   analogWriteSetup(LED_BUILTIN);
 }
@@ -67,7 +71,7 @@ void loop() {
 
     HTTPClient http;
 
-    if (http.begin(client, "http://breezy-hounds-sneeze-189-38-187-120.loca.lt/getSensorState")) {  // HTTP
+    if (http.begin(client, server_name + "/getSensorState")) {  // HTTP
 
 
       // start connection and send HTTP header
@@ -101,7 +105,7 @@ void loop() {
             possible_quote = "";
           }
           HTTPClient httpFeedback;
-          httpFeedback.begin(client, "http://breezy-hounds-sneeze-189-38-187-120.loca.lt/setLedFeedback");
+          httpFeedback.begin(client, server_name + "/setLedFeedback");
           httpFeedback.addHeader("Content-Type", "application/json");
           String led_feedback = String("{ \"led_state\": " + possible_quote + led_value + possible_quote + " }");
           httpFeedback.POST(led_feedback);
