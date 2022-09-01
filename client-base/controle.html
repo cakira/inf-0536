@@ -6,8 +6,9 @@
 <!-- <input id="name" type="text"> -->
 
 <!-- <button id="button">send</button> <br> -->
-<button id="led-on">led on</button>
 <button id="led-off">led off</button>
+<input type="range" min="0" max="100" value="0" class="slider" id="led-analog">
+<button id="led-on">led on</button>
 <div class="output"></div>
 <div class="counter">LED current state: <spam class="ledFeedback"></spam></div>
 <script>
@@ -19,6 +20,7 @@
         $('.output').text(JSON.stringify(x));
         $('.ledFeedback').load("getLedFeedback");
     },1000)
+    var slider = document.getElementById("led-analog");
 
     $('.ledFeedback').load("getLedFeedback");
 
@@ -44,6 +46,7 @@
             // alert(data)
             // console.log(data)
         });
+        slider.value = 100;
     });
 
     $("#led-off").click(function () {
@@ -52,7 +55,13 @@
             // alert(data)
             // console.log(data)
         });
+        slider.value = 0;
     });
+
+    slider.oninput = function() {
+        $.post("/setLed", { "led_state": slider.value } ,function (data) {
+        });
+    }
 </script>
 
 </html>

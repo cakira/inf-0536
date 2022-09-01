@@ -13,12 +13,26 @@
 
 #include <ESP8266HTTPClient.h>
 #define ESPWifiMulti ESP8266WiFiMulti
-#else
+
+void analogWriteSetup(int pin) {}
+
+#elif defined(ESP32)
 #include <WiFi.h>      //ESP32 Core WiFi Library
 #include <WiFiMulti.h>
 #include <WiFiClient.h>
 #include <HTTPClient.h>
 #define ESPWifiMulti WiFiMulti
+
+static const int LEDC_CHANNEL_0 = 0;
+
+void analogWrite(int pin, int value) {
+  ledcAttachPin(pin, LEDC_CHANNEL_0);
+  ledcWrite(LEDC_CHANNEL_0, value * 16);
+}
+
+void analogWriteSetup(int pin) {
+  ledcSetup(LEDC_CHANNEL_0, 1000, 12);
+}
 #endif
 
 ESPWifiMulti wifi_multi;
@@ -41,6 +55,7 @@ void setup() {
   WiFi.mode(WIFI_STA);
   wifi_multi.addAP("Akine", "81133018");
   pinMode(LED_BUILTIN, OUTPUT);
+  analogWriteSetup(LED_BUILTIN);
 }
 
 void loop() {
@@ -50,13 +65,10 @@ void loop() {
     WiFiClient client;
 
     HTTPClient http;
-    HTTPClient httpFeedback;
 
-    Serial.print("[HTTP] begin...\n");
     if (http.begin(client, "http://breezy-hounds-sneeze-189-38-187-120.loca.lt/getLed")) {  // HTTP
 
 
-      Serial.print("[HTTP] GET...\n");
       // start connection and send HTTP header
       int httpCode = http.GET();
 
@@ -68,18 +80,27 @@ void loop() {
         // file found at server
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
           String payload = http.getString();
+          String possible_quote;
           Serial.println(payload);
           if (payload == "on") {
+            pinMode(LED_BUILTIN, OUTPUT);
             digitalWrite(LED_BUILTIN, HIGH);
-            httpFeedback.begin(client, "http://breezy-hounds-sneeze-189-38-187-120.loca.lt/setLedFeedback");
-            httpFeedback.addHeader("Content-Type", "application/json");
-            httpFeedback.POST(String("{ \"led_state\": \"on\" }"));
+            possible_quote = "\"";
           } else if (payload == "off") {
+            pinMode(LED_BUILTIN, OUTPUT);
             digitalWrite(LED_BUILTIN, LOW);
-            httpFeedback.begin(client, "http://breezy-hounds-sneeze-189-38-187-120.loca.lt/setLedFeedback");
-            httpFeedback.addHeader("Content-Type", "application/json");
-            httpFeedback.POST(String("{ \"led_state\": \"off\" }"));
+            possible_quote = "\"";
+          } else {
+            int power = payload.toInt();
+            analogWrite(LED_BUILTIN, (255 * power) / 100);
+            payload = String(power);
+            possible_quote = "";
           }
+          HTTPClient httpFeedback;
+          httpFeedback.begin(client, "http://breezy-hounds-sneeze-189-38-187-120.loca.lt/setLedFeedback");
+          httpFeedback.addHeader("Content-Type", "application/json");
+          String led_feedback = String("{ \"led_state\": " + possible_quote + payload + possible_quote + " }");
+          httpFeedback.POST(led_feedback);
         }
       } else {
         Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
