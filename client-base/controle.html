@@ -3,14 +3,10 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </header>
 
-<!-- <input id="name" type="text"> -->
-
-<!-- <button id="button">send</button> <br> -->
 <button id="led-off">led off</button>
 <input type="range" min="0" max="100" value="0" class="slider" id="led-analog">
 <button id="led-on">led on</button>
-<div class="output"></div>
-<div class="counter">LED current state: <spam class="ledFeedback"></spam></div>
+<div>LED current state: <spam class="ledFeedback"></spam></div>
 <hr>
 <div>
     Sleep: 
@@ -20,10 +16,7 @@
 <script>
 
     // Contador
-    var x = 0;
     setInterval(() => {
-        x = x + 1;
-        $('.output').text(JSON.stringify(x));
         $('.ledFeedback').load("getLedFeedback");
     },1000)
     var slider = document.getElementById("led-analog");
