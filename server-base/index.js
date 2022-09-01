@@ -28,8 +28,7 @@ app.use((req, res, next) => {
 });
 
 app.post("/sensor", function(req, res){
-  console.log("CLIENT: google assistant", req.body)
-  console.log("CLIENT: POST em /sensor")
+  console.log("CLIENT: POST em /sensor:", req.body)
 })
 
 app.post("/setLed", function(req, res){
@@ -58,11 +57,6 @@ app.get("/getLedFeedback", function(req, res){
   console.log("CLIENT: GET em /getLedFeedback")
 })
 
-app.get("/getCounter", function(req, res){
-  res.send(counter.toString())
-  console.log("CLIENT: GET em /getCounter")
-  counter = counter + 1
-})
 
 app.get('/', (req, res) => {
   console.log("CLIENT: GET em /")
