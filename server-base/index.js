@@ -33,24 +33,28 @@ app.post("/sensor", function(req, res){
 })
 
 app.post("/setLed", function(req, res){
-  console.log("CLIENT: google assistant", req.body)
-  ledState = req.body["led_state"];
-  console.log("CLIENT: POST em /setLed")
+  j = JSON.parse(JSON.stringify(req.body))
+  console.log("CLIENT: POST em /setLed:", j)
+  ledState = j["led_state"];
+  res.sendStatus(200)
 })
 
 app.get("/getLed", function(req, res){
   res.send(ledState.toString())
+  res.status(200)
   console.log("CLIENT: GET em /getLed")
 })
 
 app.post("/setLedFeedback", function(req, res){
-  console.log("CLIENT: google assistant", req.body)
-  ledFeedback = req.body["led_state"];
-  console.log("CLIENT: POST em /setLedFeedback")
+  j = JSON.parse(JSON.stringify(req.body))
+  console.log("CLIENT: POST em /setLedFeedback: ", j)
+  ledFeedback = j["led_state"];
+  res.sendStatus(200)
 })
 
 app.get("/getLedFeedback", function(req, res){
   res.send(ledFeedback.toString())
+  res.status(200)
   console.log("CLIENT: GET em /getLedFeedback")
 })
 
