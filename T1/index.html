@@ -19,10 +19,29 @@
 </header>
 
 <body>
+<select name="mode" id="calculator_mode">
+    <option disabled selected value> -- selecione um modo -- </option>
+    <option value="mode_1">Modo 1</option>
+    <option value="mode_2">Modo 2</option>
+    <option value="mode_3">Modo 3</option>
+</select>
 <div id='calculator'>
 </div>
 <script>
-    calc_mode1 = `
+    $("#calculator_mode").prop("selectedIndex", 0);
+    $('#calculator_mode').change(function () {
+        let selected_mode = $(this).val()
+        switch (selected_mode) {
+            case 'mode_1':
+                load_calc_mode1()
+                break;
+            default:
+                alert(selected_mode + " not implemented")
+        }
+    })
+
+    function load_calc_mode1() {
+        let calc_mode1 = `
     Potência: <input type="number" id="power"> mW<br/>
     Ciclos: <input type="number" id="cycles"><br/>
     Frequência: <input type="number" id="frequency"> MHz<br/>
@@ -36,6 +55,8 @@
     $('#calculator').html(calc_mode1)
     $('#calculator').on('change', '#power, #cycles, #frequency', print_energy)
     print_energy()
+    }
+
 </script>
 </body>
 </html>
