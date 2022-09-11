@@ -35,6 +35,9 @@
             case 'mode_1':
                 load_calc_mode1()
                 break;
+            case 'mode_2':
+                load_calc_mode2()
+                break;
             default:
                 alert(selected_mode + " not implemented")
         }
@@ -55,6 +58,35 @@
     $('#calculator').html(calc_mode1)
     $('#calculator').on('change', '#power, #cycles, #frequency', print_energy)
     print_energy()
+    }
+
+    function load_calc_mode2() {
+        let calc_mode2 = `
+            Resistências, separadas por espaços: <input type="test" id="resistences"> &#x2126;<br/>
+            Tensão: <input type="number" id="voltage"> V<br/>
+            Tempo de operação: <input type="number" id="time"> s<br/>
+            Resistência equivalente: <span id="equivalent_resistance"></span> &#x2126;<br/>
+            Corrente: <span id="current"></span> A<br/>
+            Potência: <span id="power"></span> W<br/>
+            Energia: <span id="energy"></span> J
+            `
+        function print_calculations() {
+            let equivalent_resistence = 0
+            $('#resistences').val().split(' ').forEach(resistence => {
+                equivalent_resistence += Number(resistence)
+            });
+            $('#equivalent_resistance').text(equivalent_resistence)
+            let current = $('#voltage').val() / equivalent_resistence
+            let power = $('#voltage').val() * current
+            let energy = power * $('#time').val()
+            $('#current').text(current)
+            $('#power').text(power)
+            $('#energy').text(energy)
+        }
+
+        $('#calculator').html(calc_mode2)
+        $('#calculator').on('change', '#resistences, #voltage, #time', print_calculations)
+        print_calculations()
     }
 
 </script>
