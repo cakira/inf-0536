@@ -1,0 +1,41 @@
+<html>
+<header>
+    <title>Calculadora de consumo energético</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        /* Remove setas de campos numéricos */
+        /* Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        
+        /* Firefox */
+        input[type=number] {
+          -moz-appearance: textfield;
+        }
+    </style>
+</header>
+
+<body>
+<div id='calculator'>
+</div>
+<script>
+    calc_mode1 = `
+    Potência: <input type="number" id="power"> mW<br/>
+    Ciclos: <input type="number" id="cycles"><br/>
+    Frequência: <input type="number" id="frequency"> MHz<br/>
+    Energia: <span id="energy"></span> J
+    `
+    function print_energy() {
+        let energy = $('#power').val() * $('#cycles').val() / $('#frequency').val()
+        $('#energy').text(energy)
+    }
+
+    $('#calculator').html(calc_mode1)
+    $('#calculator').on('change', '#power, #cycles, #frequency', print_energy)
+    print_energy()
+</script>
+</body>
+</html>
