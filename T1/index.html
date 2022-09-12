@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <title>Calculadora de consumo energético</title>
+    <meta charset="utf-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Remove setas de campos numéricos */
+        /* Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+
+        /* Firefox */
+        input[type=number] {
+          -moz-appearance: textfield;
+        }
+    </style>
+</head>
+
+<body>
+<div style="margin-bottom: 1em;">
+    <h1>Calculadora de consumo energético</h1>
+    INF0536 – Princípios de operação e Projeto de Sistemas IoT<br/>
+    2º semestre de 2022<br/>
+    <br/>
+    Aluno: Cleber Akira Nakandakare
+</div>
+<div style="border: solid; padding: 2em">
+<select name="mode" id="calculator_mode">
+    <option disabled selected value> -- selecione um modo -- </option>
+    <option value="mode_1">Modo 1 – energia a partir de potência, frequência e ciclos de operação</option>
+    <option value="mode_2">Modo 2 – energia em um circuito com resistores em série</option>
+    <option value="mode_3">Modo 3 – energia em um circuito com resistores em paralelo</option>
+</select>
+<div id='calculator' style='margin-top: 1em;'>
+</div>
+</div>
+<script>
+    $("#calculator_mode").prop("selectedIndex", 0);
+    $('#calculator_mode').change(function () {
+        let selected_mode = $(this).val()
+        switch (selected_mode) {
+            case 'mode_1':
+                load_calc_mode1()
+                break;
+            case 'mode_2':
+                load_calc_mode2()
+                break;
+            case 'mode_3':
+                load_calc_mode3()
+                break;
+            default:
+                alert(selected_mode + " not implemented")
+        }
+    })
+
+    function load_calc_mode1() {
+        let calc_mode1 = `
+            Potência: <input type="number" id="power"> mW<br/>
+            Ciclos: <input type="number" id="cycles"><br/>
+            Frequência: <input type="number" id="frequency"> MHz<br/>
+
+            <div id='math_equation' style='padding: 2em;'>
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block" indentalign="left">
+            <mrow>
+            <mi>E</mi>
+            <mo>=</mo>
+            <mi>P</mi>
+            <mo>*</mo>
+            <mfrac>
+                <mi>C</mi>
+                <mi>F</mi>
+            </mfrac>
+            <mo>=</mo>
+            <mn id="equation_p">P</mn>
+            <mo rspace='thickmathspace'>&InvisibleTimes;</mo>
+            <mi mathvariant='normal' class='MathML-Unit'>mW</mi>
+            <mo>*</mo>
+            <mfrac>
+                <mrow><mn id="equation_c">C</mn></mrow>
+                <mrow>
+                    <mn id="equation_f">F</mn>
+                    <mo rspace='thickmathspace'>&InvisibleTimes;</mo>
+                    <mi mathvariant='normal' class='MathML-Unit'>MHz</mi>
+                </mrow>
+            </mfrac>
+            <mo>*</mo>
+            <msup><mn>10</mn><mn>-9</mn></msup>
+            <mo>=</mo>
+            <mn id="equation_e">E</mn>
+            <mo rspace='thickmathspace'>&InvisibleTimes;</mo>
+            <mi mathvariant='normal' class='MathML-Unit'>J</mi>
+            </mrow>
+            </math>
+            </div>
+
+            Energia: <span id="energy"></span> J
+            `
+        function print_energy() {
+            $('#equation_p').text(Number($('#power').val()))
+            $('#equation_c').text(Number($('#cycles').val()))
+            $('#equation_f').text(Number($('#frequency').val()))
+            let energy = $('#power').val() * $('#cycles').val() / $('#frequency').val() * 1E-9
+            $('#energy').text(energy)
+            $('#equation_e').text(energy)
+        }
+
+        $('#calculator').html(calc_mode1)
+        MathJax.typeset()
+
+        $('#calculator').on('change', '#power, #cycles, #frequency', print_energy)
+        print_energy()
+    }
+
+    var calc_mode23 = `
+        Resistências, separadas por espaços: <input type="test" id="resistences"> &#x2126;<br/>
+        Tensão: <input type="number" id="voltage"> V<br/>
+        Tempo de operação: <input type="number" id="time"> s<br/>
+        <div id='math_equation' style='padding: 2em;'>
+        </div>
+        Energia: <span id="energy"></span> J
+        `
+
+    function print_calculations(equivalent_resistence) {
+        $('#equivalent_resistance').text(equivalent_resistence)
+        let current = $('#voltage').val() / equivalent_resistence
+        let power = $('#voltage').val() * current
+        let energy = power * $('#time').val()
+        $('#current').text(current)
+        $('#power').text(power)
+    }
+
+    function load_calc_mode2() {
+        function print_mode2_calculations() {
+            let math_equation = `
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block" indentalign="left">
+<mrow>
+    <mi>I</mi>
+    <mo>=</mo>
+    <mfrac>
+        <mi>V</mi>
+        <mrow>
+            <msub><mi>R</mi><mn>0</mn></msub>
+            <mo>+</mo>
+            <mi>&hellip;</mi>
+            <mo>+</mo>
+            <msub><mi>R</mi><mi>n</mi></mn></msub>
+        </mrow>
+    </mfrac>
+    <mo>=</mo>
+    <mfrac>
+        <mrow>
+            <mn>%V</mn>
+            <mo rspace='thickmathspace'>&InvisibleTimes;</mo>
+            <mi mathvariant='normal' class='MathML-Unit'>V</mi>
+        </mrow>
+        <mrow>
+        %RR
+        </mrow>
+    </mfrac>
+    <mo>=</mo>
+    <mn>%I</mn>
+    <mo rspace='thickmathspace'>&InvisibleTimes;</mo>
+    <mi mathvariant='normal' class='MathML-Unit'>A</mi>
+</mrow>
+</math>
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block" indentalign="left">
+<mrow>
+    <mi>P</mi>
+    <mo>=</mo>
+    <mi>V</mi>
+    <mo>*</mo>
+    <mi>I</mi>
+    <mo>=</mo>
+    <mn>%V</mn>
+    <mo rspace='thickmathspace'>&InvisibleTimes;</mo>
+    <mi mathvariant='normal' class='MathML-Unit'>V</mi>
+    <mo>*</mo>
+    <mi>%I</mi>
+    <mo rspace='thickmathspace'>&InvisibleTimes;</mo>
+    <mi mathvariant='normal' class='MathML-Unit'>A</mi>
+    <mo>=</mo>
+    <mi>%P</mi>
+    <mo rspace='thickmathspace'>&InvisibleTimes;</mo>
+    <mi mathvariant='normal' class='MathML-Unit'>W</mi>
+</mrow>
+</math>
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block" indentalign="left">
+<mrow>
+    <mi>E</mi>
+    <mo>=</mo>
+    <mi>P</mi>
+    <mo>*</mo>
+    <mi>t</mi>
+    <mo>=</mo>
+    <mn>%P</mn>
+    <mo rspace='thickmathspace'>&InvisibleTimes;</mo>
+    <mi mathvariant='normal' class='MathML-Unit'>W</mi>
+    <mo>*</mo>
+    <mi>%t</mi>
+    <mo rspace='thickmathspace'>&InvisibleTimes;</mo>
+    <mi mathvariant='normal' class='MathML-Unit'>s</mi>
+    <mo>=</mo>
+    <mi>%E</mi>
+    <mo rspace='thickmathspace'>&InvisibleTimes;</mo>
+    <mi mathvariant='normal' class='MathML-Unit'>J</mi>
+</mrow>
+</math>
+`
+            let equivalent_resistence = 0
+            let math_series_r = []
+            $('#resistences').val().split(' ').forEach(resistence => {
+                equivalent_resistence += Number(resistence)
+                math_series_r.push("<mn>" + Number(resistence) + "</mn><mo rspace='thickmathspace'>&InvisibleTimes;</mo><mi mathvariant='normal' class='MathML-Unit'>&#x2126;</mi>")
+            });
+            let voltage = Number($('#voltage').val())
+            let time = Number($('#time').val())
+            let current = voltage / equivalent_resistence
+            let power = voltage * current
+            let energy = power * time
+
+            math_equation = math_equation.replace(/%RR/, math_series_r.join('<mo>+</mo>'))
+            math_equation = math_equation.replace(/%V/g, voltage)
+            math_equation = math_equation.replace(/%t/g, time)
+            math_equation = math_equation.replace(/%I/g, current)
+            math_equation = math_equation.replace(/%P/g, power)
+            math_equation = math_equation.replace(/%E/g, energy)
+            $('#math_equation').html(math_equation)
+            MathJax.typeset()
+            $('#energy').text(energy)
+        }
+
+        $('#calculator').html(calc_mode23)
+        $('#calculator').on('change', '#resistences, #voltage, #time', print_mode2_calculations)
+        print_mode2_calculations()
+    }
+
+    function load_calc_mode3() {
+        function print_mode3_calculations() {
+            let math_equation = `
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block" indentalign="left">
+<mrow>
+    <mfrac>
+        <mn>1</mn>
+        <msub><mi>R</mi><mi>eq</mi>
+    </mfrac>
+    <mo>=</mo>
+    <mfrac>
+        <mn>1</mn>
+        <msub><mi>R</mi><mn>0</mn>
+    </mfrac>
+    <mo>+</mo>
+    <mi>&hellip;</mi>
+    <mo>+</mo>
+    <mfrac>
+        <mn>1</mn>
+        <msub><mi>R</mi><mi>n</mi>
+    </mfrac>
+    <mo>=</mo>
+    %RR
+    <mo>=></mo>
+    <msub><mi>R</mi><mi>eq</mi></msub>
+    <mo>=</mo>
+    <mn>%REQ</mn><mo rspace='thickmathspace'>&InvisibleTimes;</mo><mi mathvariant='normal' class='MathML-Unit'>&#x2126;</mi>
+</mrow>
+</math>
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block" indentalign="left">
+<mrow>
+    <mi>I</mi>
+    <mo>=</mo>
+    <mfrac>
+        <mi>V</mi>
+        <msub><mi>R</mi><mi>eq</mi></msub>
+    </mfrac>
+    <mo>=</mo>
+    <mfrac>
+        <mrow>
+            <mn>%V</mn>
+            <mo rspace='thickmathspace'>&InvisibleTimes;</mo>
+            <mi mathvariant='normal' class='MathML-Unit'>V</mi>
+        </mrow>
+        <mrow>
+            <mn>%REQ</mn><mo rspace='thickmathspace'>&InvisibleTimes;</mo><mi mathvariant='normal' class='MathML-Unit'>&#x2126;</mi>
+        </mrow>
+    </mfrac>
+    <mo>=</mo>
+    <mn>%I</mn>
+    <mo rspace='thickmathspace'>&InvisibleTimes;</mo>
+    <mi mathvariant='normal' class='MathML-Unit'>A</mi>
+</mrow>
+</math>
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block" indentalign="left">
+<mrow>
+    <mi>P</mi>
+    <mo>=</mo>
+    <mi>V</mi>
+    <mo>*</mo>
+    <mi>I</mi>
+    <mo>=</mo>
+    <mn>%V</mn>
+    <mo rspace='thickmathspace'>&InvisibleTimes;</mo>
+    <mi mathvariant='normal' class='MathML-Unit'>V</mi>
+    <mo>*</mo>
+    <mi>%I</mi>
+    <mo rspace='thickmathspace'>&InvisibleTimes;</mo>
+    <mi mathvariant='normal' class='MathML-Unit'>A</mi>
+    <mo>=</mo>
+    <mi>%P</mi>
+    <mo rspace='thickmathspace'>&InvisibleTimes;</mo>
+    <mi mathvariant='normal' class='MathML-Unit'>W</mi>
+</mrow>
+</math>
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block" indentalign="left">
+<mrow>
+    <mi>E</mi>
+    <mo>=</mo>
+    <mi>P</mi>
+    <mo>*</mo>
+    <mi>t</mi>
+    <mo>=</mo>
+    <mn>%P</mn>
+    <mo rspace='thickmathspace'>&InvisibleTimes;</mo>
+    <mi mathvariant='normal' class='MathML-Unit'>W</mi>
+    <mo>*</mo>
+    <mi>%t</mi>
+    <mo rspace='thickmathspace'>&InvisibleTimes;</mo>
+    <mi mathvariant='normal' class='MathML-Unit'>s</mi>
+    <mo>=</mo>
+    <mi>%E</mi>
+    <mo rspace='thickmathspace'>&InvisibleTimes;</mo>
+    <mi mathvariant='normal' class='MathML-Unit'>J</mi>
+</mrow>
+</math>
+`
+            let conductance = 0
+            let math_series_r = []
+            $('#resistences').val().split(' ').forEach(resistence => {
+                conductance += 1 / Number(resistence)
+                math_series_r.push("<mfrac><mn>1</mn><mrow><mn>" + Number(resistence) + "</mn><mo rspace='thickmathspace'>&InvisibleTimes;</mo><mi mathvariant='normal' class='MathML-Unit'>&#x2126;</mi></mrow></mfrac>")
+            });
+            equivalent_resistence = 1 / conductance
+            let voltage = Number($('#voltage').val())
+            let time = Number($('#time').val())
+            let current = voltage / equivalent_resistence
+            let power = voltage * current
+            let energy = power * time
+
+            math_equation = math_equation.replace(/%RR/, math_series_r.join('<mo>+</mo>'))
+            math_equation = math_equation.replace(/%REQ/g, equivalent_resistence)
+            math_equation = math_equation.replace(/%V/g, voltage)
+            math_equation = math_equation.replace(/%t/g, time)
+            math_equation = math_equation.replace(/%I/g, current)
+            math_equation = math_equation.replace(/%P/g, power)
+            math_equation = math_equation.replace(/%E/g, energy)
+            $('#math_equation').html(math_equation)
+            MathJax.typeset()
+            $('#energy').text(energy)
+        }
+
+        $('#calculator').html(calc_mode23)
+        $('#calculator').on('change', '#resistences, #voltage, #time', print_mode3_calculations)
+        print_mode3_calculations()
+    }
+
+</script>
+</body>
+</html>
