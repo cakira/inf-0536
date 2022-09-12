@@ -22,13 +22,22 @@
 </head>
 
 <body>
+<div style="margin-bottom: 1em;">
+    <h1>Calculadora de consumo energético</h1>
+    INF0536 – Princípios de operação e Projeto de Sistemas IoT<br/>
+    2º semestre de 2022<br/>
+    <br/>
+    Aluno: Cleber Akira Nakandakare
+</div>
+<div style="border: solid; padding: 2em">
 <select name="mode" id="calculator_mode">
     <option disabled selected value> -- selecione um modo -- </option>
-    <option value="mode_1">Modo 1</option>
-    <option value="mode_2">Modo 2</option>
-    <option value="mode_3">Modo 3</option>
+    <option value="mode_1">Modo 1 – energia a partir de potência, frequência e ciclos de operação</option>
+    <option value="mode_2">Modo 2 – energia em um circuito com resistores em série</option>
+    <option value="mode_3">Modo 3 – energia em um circuito com resistores em paralelo</option>
 </select>
-<div id='calculator'>
+<div id='calculator' style='margin-top: 1em;'>
+</div>
 </div>
 <script>
     $("#calculator_mode").prop("selectedIndex", 0);
@@ -55,7 +64,8 @@
             Ciclos: <input type="number" id="cycles"><br/>
             Frequência: <input type="number" id="frequency"> MHz<br/>
 
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <div id='math_equation' style='padding: 2em;'>
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block" indentalign="left">
             <mrow>
             <mi>E</mi>
             <mo>=</mo>
@@ -86,6 +96,7 @@
             <mi mathvariant='normal' class='MathML-Unit'>J</mi>
             </mrow>
             </math>
+            </div>
 
             Energia: <span id="energy"></span> J
             `
@@ -109,7 +120,7 @@
         Resistências, separadas por espaços: <input type="test" id="resistences"> &#x2126;<br/>
         Tensão: <input type="number" id="voltage"> V<br/>
         Tempo de operação: <input type="number" id="time"> s<br/>
-        <div id='math_equation'>
+        <div id='math_equation' style='padding: 2em;'>
         </div>
         Energia: <span id="energy"></span> J
         `
@@ -126,7 +137,7 @@
     function load_calc_mode2() {
         function print_mode2_calculations() {
             let math_equation = `
-<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block" indentalign="left">
 <mrow>
     <mi>I</mi>
     <mo>=</mo>
@@ -157,7 +168,7 @@
     <mi mathvariant='normal' class='MathML-Unit'>A</mi>
 </mrow>
 </math>
-<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block" indentalign="left">
 <mrow>
     <mi>P</mi>
     <mo>=</mo>
@@ -178,7 +189,7 @@
     <mi mathvariant='normal' class='MathML-Unit'>W</mi>
 </mrow>
 </math>
-<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block" indentalign="left">
 <mrow>
     <mi>E</mi>
     <mo>=</mo>
@@ -231,7 +242,7 @@
     function load_calc_mode3() {
         function print_mode3_calculations() {
             let math_equation = `
-<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block" indentalign="left">
 <mrow>
     <mfrac>
         <mn>1</mn>
@@ -257,7 +268,7 @@
     <mn>%REQ</mn><mo rspace='thickmathspace'>&InvisibleTimes;</mo><mi mathvariant='normal' class='MathML-Unit'>&#x2126;</mi>
 </mrow>
 </math>
-<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block" indentalign="left">
 <mrow>
     <mi>I</mi>
     <mo>=</mo>
@@ -282,7 +293,7 @@
     <mi mathvariant='normal' class='MathML-Unit'>A</mi>
 </mrow>
 </math>
-<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block" indentalign="left">
 <mrow>
     <mi>P</mi>
     <mo>=</mo>
@@ -303,7 +314,7 @@
     <mi mathvariant='normal' class='MathML-Unit'>W</mi>
 </mrow>
 </math>
-<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block" indentalign="left">
 <mrow>
     <mi>E</mi>
     <mo>=</mo>
